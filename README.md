@@ -28,7 +28,7 @@ Jika ingin menjalankan via Docker, perlu **Docker** & **Docker Compose**.
 ## Instalasi Lokal (Langkah demi langkah)
 Ikuti langkah berikut di terminal (Linux/macOS) atau PowerShell (Windows):
 
-### 0. Nyalakan Laragon XAMPP
+### 0. Nyalakan Laragon / XAMPP
 
 Ini berfungsi untuk menyalakan mysql di komputer lokal anda.
 
