@@ -28,6 +28,10 @@ Jika ingin menjalankan via Docker, perlu **Docker** & **Docker Compose**.
 ## Instalasi Lokal (Langkah demi langkah)
 Ikuti langkah berikut di terminal (Linux/macOS) atau PowerShell (Windows):
 
+### 0. Nyalakan Laragon XAMPP
+
+Ini berfungsi untuk menyalakan mysql di komputer lokal anda.
+
 ### 1. Clone repository
 ```bash
 git clone https://github.com/DaffaFirasyan/Animart.git
@@ -89,12 +93,6 @@ php artisan storage:link
 ```bash
 npm install
 ```
-Atau jika Anda memakai Yarn/PNPM:
-```bash
-yarn
-# atau
-pnpm install
-```
 
 ### 8. Jalankan Vite (development)
 ```bash
@@ -104,7 +102,7 @@ Perintah ini akan menjalankan dev server Vite (untuk hot-reload asset).
 
 ### 9. Jalankan aplikasi Laravel
 ```bash
-php artisan serve --host=127.0.0.1 --port=8000
+php artisan serve
 ```
 Buka browser ke `http://127.0.0.1:8000` (atau `APP_URL` yang Anda set).
 
