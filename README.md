@@ -57,8 +57,8 @@ Edit `.env` dan sesuaikan konfigurasi berikut:
 - `DB_HOST=127.0.0.1`
 - `DB_PORT=3306`
 - `DB_DATABASE=animart`
-- `DB_USERNAME=your_db_user`
-- `DB_PASSWORD=your_db_password`
+- `DB_USERNAME=root`
+- `DB_PASSWORD=`
 
 > Jika Anda akan menggunakan SQLite untuk testing cepat, buat file database: `database/database.sqlite` dan set `DB_CONNECTION=sqlite`.
 
