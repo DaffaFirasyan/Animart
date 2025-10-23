@@ -58,21 +58,44 @@
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-col justify-center items-center">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Omzet Hari Ini</h3>
-                    @php
-                        // Kita hitung di sini agar selalu real-time
-                        $omzetHariIni = \App\Models\Transaksi::whereDate('created_at', \Carbon\Carbon::today())->sum('total_harga');
-                    @endphp
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <form action="{{ route('dashboard') }}" method="GET" class="mb-2">
+                        <select name="filter_omzet" 
+                                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm p-2" 
+                                onchange="this.form.submit()">
+                            
+                            <option value="harian" @if($filterOmzet == 'harian') selected @endif>Omzet Hari Ini</option>
+                            <option value="mingguan" @if($filterOmzet == 'mingguan') selected @endif>Omzet Minggu Ini</option>
+                            <option value="bulanan" @if($filterOmzet == 'bulanan') selected @endif>Omzet Bulan Ini</option>
+
+                        </select>
+                    </form>
+                    
+                    <h3 class="text-lg font-medium text-gray-900 mb-2 mt-2">
+                        {{ $judulOmzet }}
+                    </h3>
+                    
                     <p class="text-3xl font-bold text-gray-800">
-                        Rp {{ number_format($omzetHariIni, 0, ',', '.') }}
+                        Rp {{ number_format($omzetWidget, 0, ',', '.') }}
                     </p>
                 </div>
-
             </div> <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">
-                    Grafik Tren Omzet (7 Hari Terakhir)
-                </h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">
+                        Grafik Tren Omzet
+                    </h3>
+                    
+                    <form action="{{ route('dashboard') }}" method="GET">
+                        <select name="filter_grafik" 
+                                class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm p-2" 
+                                onchange="this.form.submit()">
+                            <option value="harian" @if($filterGrafik == 'harian') selected @endif>7 Hari Terakhir</option>
+                            <option value="mingguan" @if($filterGrafik == 'mingguan') selected @endif>4 Minggu Terakhir</option>
+                            <option value="bulanan" @if($filterGrafik == 'bulanan') selected @endif>6 Bulan Terakhir</option>
+                        </select>
+                    </form>
+                </div>
+
                 <div>
                     <canvas id="salesChart"></canvas>
                 </div>

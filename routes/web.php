@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
 
     // Rute untuk Laporan 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/pdf', [LaporanController::class, 'downloadPDF'])->name('laporan.pdf');
 });
 
 // Route autentikasi bawaan Breeze (biarkan di paling bawah)

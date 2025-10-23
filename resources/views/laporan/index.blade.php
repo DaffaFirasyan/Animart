@@ -24,12 +24,21 @@
                             <div class="self-end">
                                 <x-primary-button type="submit">{{ __('Filter') }}</x-primary-button>
                             </div>
+                            <div class="self-end flex gap-2">
+                                <x-primary-button type="submit">{{ __('Filter') }}</x-primary-button>
+                                
+                                <x-secondary-button type="submit" 
+                                                    formaction="{{ route('laporan.pdf') }}" 
+                                                    formtarget="_blank">
+                                    Download PDF
+                                </x-secondary-button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Total Omzet</h3>
                     <p class="text-3xl font-bold text-gray-800">
@@ -41,6 +50,19 @@
                     <p class="text-3xl font-bold text-gray-800">
                         {{ number_format($totalTransaksi, 0, ',', '.') }}
                     </p>
+                </div>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Pendapatan per Menu (Rp)</h3>
+                    <div class="space-y-2">
+                        @forelse ($pendapatanPerMenu as $item)
+                            <div class="flex justify-between text-sm">
+                                <span class="font-medium">{{ $item->menu->nama_menu }}</span>
+                                <span class="font-bold">Rp {{ number_format($item->total_pendapatan, 0, ',', '.') }}</span>
+                            </div>
+                        @empty
+                            <p class="text-sm text-gray-500">Tidak ada data penjualan.</p>
+                        @endforelse
+                    </div>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Menu Terlaris</h3>
