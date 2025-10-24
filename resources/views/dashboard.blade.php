@@ -44,7 +44,7 @@
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4 text-green-600">
-                        🛒 Rekomendasi Pemesanan
+                        🛒 Rekomendasi Pembelian Bahan Baku
                     </h3>
                     <div class="space-y-2 max-h-48 overflow-y-auto">
                         @forelse ($rekomendasiPemesanan as $rekomendasi)

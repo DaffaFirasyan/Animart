@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\BahanBaku;
 use Illuminate\Http\Request;
+use App\Models\Pengeluaran;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class BahanBakuController extends Controller
 {
@@ -91,27 +96,65 @@ class BahanBakuController extends Controller
         }
     }
 
+/**
+     * Menampilkan form untuk menambah stok.
+     */
     public function showTambahStokForm(BahanBaku $bahanBaku)
     {
         return view('bahan_baku.tambah-stok', compact('bahanBaku'));
     }
 
+    /**
+     * [PERUBAHAN] Menyimpan penambahan stok DAN mencatat pengeluaran.
+     */
     public function storeTambahStok(Request $request)
     {
-        // Validasi
-        $request->validate([
+        // 1. Validasi input (termasuk input baru)
+        $validated = $request->validate([
             'bahan_baku_id' => 'required|exists:bahan_bakus,id',
             'jumlah_tambah' => 'required|numeric|min:0.01',
+            'harga_beli' => 'required|numeric|min:0',
+            'tanggal_beli' => 'required|date',
         ]);
 
-        // Cari bahan baku
-        $bahanBaku = BahanBaku::findOrFail($request->bahan_baku_id);
+        // Gunakan transaction untuk memastikan keduanya berhasil atau gagal bersama
+        DB::beginTransaction();
+        try {
+            // 2. Cari bahan baku
+            $bahanBaku = BahanBaku::findOrFail($validated['bahan_baku_id']);
 
-        // Tambah stok menggunakan 'increment' (aman dari race condition)
-        $bahanBaku->increment('stok_saat_ini', $request->jumlah_tambah);
+            // 3. Tambah stok
+            $bahanBaku->increment('stok_saat_ini', $validated['jumlah_tambah']);
 
-        // Redirect kembali ke halaman index dengan pesan sukses
-        return redirect()->route('bahan-baku.index')
-                         ->with('success', 'Stok ' . $bahanBaku->nama_bahan . ' berhasil ditambahkan.');
+            // 4. Buat deskripsi pengeluaran otomatis
+            $deskripsi = 'Pembelian ' . $bahanBaku->nama_bahan . ' (' . $validated['jumlah_tambah'] . ' ' . $bahanBaku->satuan . ')';
+
+            // 5. Catat pengeluaran
+            Pengeluaran::create([
+                'user_id' => Auth::id(), // ID user yang login
+                'bahan_baku_id' => $bahanBaku->id,
+                'deskripsi' => $deskripsi,
+                'jumlah_pengeluaran' => $validated['harga_beli'],
+                'kuantitas' => $validated['jumlah_tambah'],
+                'satuan' => $bahanBaku->satuan,
+                // Pastikan tanggal disimpan dengan waktu (misal awal hari)
+                'tanggal_pengeluaran' => Carbon::parse($validated['tanggal_beli'])->startOfDay(),
+            ]);
+
+            // 6. Commit transaction
+            DB::commit();
+
+            // 7. Redirect dengan pesan sukses
+            return redirect()->route('bahan-baku.index')
+                            ->with('success', 'Stok ' . $bahanBaku->nama_bahan . ' berhasil ditambahkan & pengeluaran dicatat.');
+
+        } catch (\Exception $e) {
+            // 8. Rollback jika ada error
+            DB::rollBack();
+            Log::error('Error Tambah Stok & Pengeluaran: ' . $e->getMessage());
+            return redirect()->back()
+                             ->with('error', 'Gagal menyimpan: ' . $e->getMessage())
+                             ->withInput();
+        }
     }
 }

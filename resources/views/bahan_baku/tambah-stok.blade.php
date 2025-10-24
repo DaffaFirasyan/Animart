@@ -9,11 +9,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    
+
                     <form action="{{ route('bahan-baku.store-tambah-stok') }}" method="POST">
                         @csrf
                         <input type="hidden" name="bahan_baku_id" value="{{ $bahanBaku->id }}">
-                        
+
                         <div class="space-y-4">
                             <div>
                                 <x-input-label :value="__('Stok Saat Ini')" />
@@ -26,8 +26,21 @@
                                 <x-input-error :messages="$errors->get('jumlah_tambah')" class="mt-2" />
                             </div>
 
+                            <div>
+                                <x-input-label for="harga_beli" :value="__('Total Harga Beli (Rp)')" />
+                                <x-text-input id="harga_beli" class="block mt-1 w-full" type="number" step="100" name="harga_beli" :value="old('harga_beli')" required />
+                                <x-input-error :messages="$errors->get('harga_beli')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="tanggal_beli" :value="__('Tanggal Pembelian')" />
+                                {{-- Default ke hari ini --}}
+                                <x-text-input id="tanggal_beli" class="block mt-1 w-full" type="date" name="tanggal_beli" :value="old('tanggal_beli', now()->toDateString())" required />
+                                <x-input-error :messages="$errors->get('tanggal_beli')" class="mt-2" />
+                            </div>
+
                             <div class="flex items-center gap-4">
-                                <x-primary-button type="submit">{{ __('Simpan Penambahan') }}</x-primary-button>
+                                <x-primary-button type="submit">{{ __('Simpan Penambahan & Catat Pengeluaran') }}</x-primary-button>
                                 <a href="{{ route('bahan-baku.index') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                                     {{ __('Batal') }}
                                 </a>

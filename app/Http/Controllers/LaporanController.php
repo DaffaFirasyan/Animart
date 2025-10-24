@@ -5,117 +5,144 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
-use Carbon\Carbon; // <-- Pastikan ini ada
+use App\Models\Pengeluaran;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf; // <-- Pastikan ini ada
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Tentukan rentang tanggal & konversi ke Carbon
-        // [PERBAIKAN UTAMA] Gunakan ->startOfDay() dan ->endOfDay()
+        // 1. Ambil Filter
         $tanggalMulaiCarbon = Carbon::parse($request->input('tanggal_mulai', Carbon::now()->startOfMonth()->toDateString()))->startOfDay();
         $tanggalAkhirCarbon = Carbon::parse($request->input('tanggal_akhir', Carbon::now()->endOfMonth()->toDateString()))->endOfDay();
+        $filterJenis = $request->input('filter_jenis', 'semua'); // Default 'semua'
 
-        // Format kembali ke string HANYA untuk ditampilkan di input form
         $inputTanggalMulai = $tanggalMulaiCarbon->toDateString();
         $inputTanggalAkhir = $tanggalAkhirCarbon->toDateString();
 
-        // 2. [PERBAIKAN UTAMA] Buat query dasar menggunakan whereBetween pada timestamp
-        // BUKAN DB::raw('DATE(created_at)')
-        $baseQuery = Transaksi::whereBetween('created_at', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+        // Inisialisasi variabel data
+        $totalPemasukan = 0;
+        $totalTransaksi = 0;
+        $menuTerlaris = collect(); // Gunakan collection kosong
+        $pendapatanPerMenu = collect();
+        $daftarPemasukan = collect(); // Gunakan collection kosong
+        $totalPengeluaran = 0;
+        $daftarPengeluaran = collect();
+        $labaRugi = null; // Default null
 
-        // 3. Hitung Total Omzet dari query dasar (SEBELUM paginate)
-        $totalOmzet = $baseQuery->sum('total_harga');
+        // 2. Ambil Data Pemasukan (jika filter 'semua' atau 'pemasukan')
+        if ($filterJenis == 'semua' || $filterJenis == 'pemasukan') {
+            $queryPemasukan = Transaksi::whereBetween('created_at', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+            $totalPemasukan = $queryPemasukan->sum('total_harga');
+            $totalTransaksi = $queryPemasukan->count();
+            $transaksiPemasukanIds = $queryPemasukan->clone()->pluck('id');
 
-        // 4. Hitung Total Transaksi dari query dasar (SEBELUM paginate)
-        $totalTransaksi = $baseQuery->count();
+            $menuTerlaris = TransaksiDetail::whereIn('transaksi_id', $transaksiPemasukanIds)
+                                         ->with('menu')
+                                         ->select('menu_id', DB::raw('SUM(jumlah) as total_terjual'))
+                                         ->groupBy('menu_id')->orderBy('total_terjual', 'desc')->take(5)->get();
+            $pendapatanPerMenu = TransaksiDetail::whereIn('transaksi_id', $transaksiPemasukanIds)
+                                         ->with('menu')
+                                         ->select('menu_id', DB::raw('SUM(jumlah * harga_saat_transaksi) as total_pendapatan'))
+                                         ->groupBy('menu_id')->orderBy('total_pendapatan', 'desc')->take(5)->get();
+            // Ambil data paginasi hanya jika diperlukan
+            if ($filterJenis == 'semua' || $filterJenis == 'pemasukan'){
+                 $daftarPemasukan = $queryPemasukan->clone()->with(['user', 'transaksiDetails.menu'])
+                                    ->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+            }
+        }
 
-        // 5. Ambil ID transaksi dari query dasar untuk filter detail
-        // Kloning query agar perhitungan total tidak terpengaruh oleh pluck
-        $transaksiIds = $baseQuery->clone()->pluck('id');
+        // 3. Ambil Data Pengeluaran (jika filter 'semua' atau 'pengeluaran')
+        if ($filterJenis == 'semua' || $filterJenis == 'pengeluaran') {
+            $queryPengeluaran = Pengeluaran::whereBetween('tanggal_pengeluaran', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+            $totalPengeluaran = $queryPengeluaran->sum('jumlah_pengeluaran');
+             // Ambil data list hanya jika diperlukan
+            if ($filterJenis == 'semua' || $filterJenis == 'pengeluaran'){
+                $daftarPengeluaran = $queryPengeluaran->clone()->with('bahanBaku')
+                                                    ->orderBy('tanggal_pengeluaran', 'desc')->limit(50)->get();
+            }
+        }
 
-        // 6. Ambil Menu Terlaris (Qty) dari detail yang terfilter
-        $menuTerlaris = TransaksiDetail::whereIn('transaksi_id', $transaksiIds)
-                                     ->with('menu')
-                                     ->select('menu_id', DB::raw('SUM(jumlah) as total_terjual'))
-                                     ->groupBy('menu_id')
-                                     ->orderBy('total_terjual', 'desc')
-                                     ->take(5)
-                                     ->get();
+        // 4. Hitung Laba/Rugi (HANYA jika filter 'semua')
+        if ($filterJenis == 'semua') {
+            $labaRugi = $totalPemasukan - $totalPengeluaran;
+        }
 
-        // 7. Ambil Pendapatan per Menu (Rp)
-        $pendapatanPerMenu = TransaksiDetail::whereIn('transaksi_id', $transaksiIds)
-                                     ->with('menu')
-                                     ->select('menu_id', DB::raw('SUM(jumlah * harga_saat_transaksi) as total_pendapatan'))
-                                     ->groupBy('menu_id')
-                                     ->orderBy('total_pendapatan', 'desc')
-                                     ->take(5)
-                                     ->get();
-
-        // 8. Lakukan paginasi HANYA untuk daftar riwayat
-        // Kloning query lagi agar tidak terpengaruh perhitungan sebelumnya
-        $transaksis = $baseQuery->clone()->with(['user', 'transaksiDetails.menu'])
-                                ->orderBy('created_at', 'desc')
-                                ->paginate(15)
-                                ->withQueryString(); // Agar pagination tetap membawa filter tanggal
-
-        // 9. Kirim semua data ke view
+        // 5. Kirim semua data ke view
         return view('laporan.index', [
-            'transaksis' => $transaksis,
-            'totalOmzet' => $totalOmzet,
+            'daftarPemasukan' => $daftarPemasukan,
+            'totalPemasukan' => $totalPemasukan,
             'totalTransaksi' => $totalTransaksi,
             'menuTerlaris' => $menuTerlaris,
             'pendapatanPerMenu' => $pendapatanPerMenu,
-            'inputTanggalMulai' => $inputTanggalMulai, // Kirim string untuk form
-            'inputTanggalAkhir' => $inputTanggalAkhir,  // Kirim string untuk form
+            'totalPengeluaran' => $totalPengeluaran,
+            'daftarPengeluaran' => $daftarPengeluaran,
+            'labaRugi' => $labaRugi,
+            'inputTanggalMulai' => $inputTanggalMulai,
+            'inputTanggalAkhir' => $inputTanggalAkhir,
+            'filterJenisAktif' => $filterJenis, // Kirim filter aktif
         ]);
     }
 
     public function downloadPDF(Request $request)
     {
-        // 1. Ambil data (Logika SAMA dengan index, TANPA PAGINASI)
-        // [PERBAIKAN UTAMA] Gunakan ->startOfDay() dan ->endOfDay()
+        // 1. Ambil Filter
         $tanggalMulaiCarbon = Carbon::parse($request->input('tanggal_mulai', Carbon::now()->startOfMonth()->toDateString()))->startOfDay();
         $tanggalAkhirCarbon = Carbon::parse($request->input('tanggal_akhir', Carbon::now()->endOfMonth()->toDateString()))->endOfDay();
+        $filterJenis = $request->input('filter_jenis', 'semua'); // Ambil filter jenis juga
 
-        // [PERBAIKAN UTAMA] Buat query dasar menggunakan whereBetween pada timestamp
-        $baseQuery = Transaksi::whereBetween('created_at', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+        // Inisialisasi
+        $totalPemasukan = 0; $totalTransaksi = 0; $menuTerlaris = collect(); $daftarPemasukan = collect();
+        $totalPengeluaran = 0; $daftarPengeluaran = collect(); $labaRugi = null;
 
-        // Hitung total dari query dasar
-        $totalOmzet = $baseQuery->sum('total_harga');
-        $totalTransaksi = $baseQuery->count();
-        $transaksiIds = $baseQuery->clone()->pluck('id'); // Clone
+        // 2. Ambil Data Pemasukan (jika perlu) - TANPA PAGINASI
+        if ($filterJenis == 'semua' || $filterJenis == 'pemasukan') {
+            $queryPemasukan = Transaksi::whereBetween('created_at', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+            $totalPemasukan = $queryPemasukan->sum('total_harga');
+            $totalTransaksi = $queryPemasukan->count();
+            $transaksiPemasukanIds = $queryPemasukan->clone()->pluck('id');
+            $menuTerlaris = TransaksiDetail::whereIn('transaksi_id', $transaksiPemasukanIds)->with('menu')
+                                         ->select('menu_id', DB::raw('SUM(jumlah) as total_terjual'))
+                                         ->groupBy('menu_id')->orderBy('total_terjual', 'desc')->take(5)->get();
+            $daftarPemasukan = $queryPemasukan->clone()->with(['user', 'transaksiDetails.menu'])
+                                ->orderBy('created_at', 'asc')->get();
+        }
 
-        $menuTerlaris = TransaksiDetail::whereIn('transaksi_id', $transaksiIds)
-                                     ->with('menu')
-                                     ->select('menu_id', DB::raw('SUM(jumlah) as total_terjual'))
-                                     ->groupBy('menu_id')
-                                     ->orderBy('total_terjual', 'desc')
-                                     ->take(5)
-                                     ->get();
+        // 3. Ambil Data Pengeluaran (jika perlu) - TANPA PAGINASI
+        if ($filterJenis == 'semua' || $filterJenis == 'pengeluaran') {
+             $queryPengeluaran = Pengeluaran::whereBetween('tanggal_pengeluaran', [$tanggalMulaiCarbon, $tanggalAkhirCarbon]);
+             $totalPengeluaran = $queryPengeluaran->sum('jumlah_pengeluaran');
+             $daftarPengeluaran = $queryPengeluaran->clone()->with('bahanBaku')
+                                                 ->orderBy('tanggal_pengeluaran', 'asc')->get();
+        }
 
-        // Ambil SEMUA transaksi
-        $transaksis = $baseQuery->clone()->with(['user', 'transaksiDetails.menu']) // Clone
-                                ->orderBy('created_at', 'asc') // Urutkan dari lama ke baru untuk PDF
-                                ->get();
+        // 4. Hitung Laba Rugi (jika perlu)
+        if ($filterJenis == 'semua') {
+            $labaRugi = $totalPemasukan - $totalPengeluaran;
+        }
 
-        // 2. Kumpulkan data untuk view PDF
+        // 5. Kumpulkan data untuk view PDF
         $data = [
-            'transaksis' => $transaksis,
-            'totalOmzet' => $totalOmzet,
+            'daftarPemasukan' => $daftarPemasukan,
+            'totalPemasukan' => $totalPemasukan,
             'totalTransaksi' => $totalTransaksi,
             'menuTerlaris' => $menuTerlaris,
-            'inputTanggalMulai' => $tanggalMulaiCarbon->format('d M Y'), // Format tanggal untuk PDF
-            'inputTanggalAkhir' => $tanggalAkhirCarbon->format('d M Y'),  // Format tanggal untuk PDF
+            'totalPengeluaran' => $totalPengeluaran,
+            'daftarPengeluaran' => $daftarPengeluaran,
+            'labaRugi' => $labaRugi,
+            'inputTanggalMulai' => $tanggalMulaiCarbon->format('d M Y'),
+            'inputTanggalAkhir' => $tanggalAkhirCarbon->format('d M Y'),
+            'filterJenis' => $filterJenis, // Kirim filter jenis ke PDF
         ];
 
-        // 3. Buat PDF
-        $pdf = Pdf::loadView('laporan.pdf', $data);
+        // 6. Buat PDF
+        $pdf = Pdf::loadView('laporan.pdf_bisnis', $data); // Tetap pakai view yang sama
 
-        // 4. Download PDF
-        $namaFile = 'Laporan_Animart_' . $tanggalMulaiCarbon->format('Y-m-d') . '_sd_' . $tanggalAkhirCarbon->format('Y-m-d') . '.pdf';
+        // 7. Download PDF
+        $jenisLaporan = ucfirst($filterJenis); // "Semua", "Pemasukan", "Pengeluaran"
+        $namaFile = "Laporan_{$jenisLaporan}_Animart_" . $tanggalMulaiCarbon->format('Y-m-d') . '_sd_' . $tanggalAkhirCarbon->format('Y-m-d') . '.pdf';
         return $pdf->download($namaFile);
     }
 }

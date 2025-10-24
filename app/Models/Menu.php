@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; // <-- TAMBAHKAN INI
 
 class Menu extends Model
 {
@@ -16,7 +17,8 @@ class Menu extends Model
     ];
 
     /**
-     * Satu Menu memiliki banyak Resep (bahan baku).
+     * Satu Menu memiliki banyak record Resep (sebagai tabel pivot).
+     * Relasi ini digunakan di controller lama dan view edit.
      */
     public function reseps(): HasMany
     {
@@ -30,12 +32,23 @@ class Menu extends Model
     {
         return $this->hasMany(TransaksiDetail::class);
     }
-    
+
     /**
      * Satu Menu memiliki banyak data Prediksi.
      */
     public function prediksis(): HasMany
     {
         return $this->hasMany(Prediksi::class);
+    }
+
+    /**
+     * [TAMBAHAN] Relasi Many-to-Many antara Menu dan BahanBaku melalui tabel pivot 'reseps'.
+     * Digunakan oleh method sync() di MenuController@update.
+     */
+    public function bahanBakuResep(): BelongsToMany // <-- METHOD BARU
+    {
+        return $this->belongsToMany(BahanBaku::class, 'reseps') // Nama Model target, Nama tabel pivot
+                    ->withPivot('jumlah_dibutuhkan') // Ambil kolom tambahan dari pivot
+                    ->withTimestamps(); // Asumsi tabel pivot 'reseps' punya timestamps
     }
 }
