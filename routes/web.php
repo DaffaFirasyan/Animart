@@ -9,6 +9,7 @@ use App\Http\Controllers\ResepController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KaryawanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,9 @@ Route::middleware('auth')->group(function () {
         // Rute untuk Laporan
         Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('laporan/pdf', [LaporanController::class, 'downloadPDF'])->name('laporan.pdf');
+
+        // Rute untuk CRUD Karyawan (Manajemen User Karyawan)
+        Route::resource('karyawan', KaryawanController::class);
     });
 });
 
