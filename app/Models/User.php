@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -51,5 +52,21 @@ class User extends Authenticatable
     public function transaksis(): HasMany
     {
         return $this->hasMany(Transaksi::class);
+    }
+
+    /**
+     * Cek apakah user adalah admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Cek apakah user adalah karyawan.
+     */
+    public function isKaryawan(): bool
+    {
+        return $this->role === 'karyawan';
     }
 }

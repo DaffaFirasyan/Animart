@@ -17,7 +17,7 @@
         .text-green { color: green; } .text-red { color: red; } .text-blue { color: blue; }
         ul { margin: 0; padding-left: 15px;}
         .col-tanggal { width: 15%; } .col-deskripsi { width: 55%; } .col-jumlah { width: 30%; text-align: right; }
-        .col-waktu { width: 20%; } .col-detail { width: 50%; } .col-total { width: 30%; text-align: right; }
+        .col-waktu { width: 18%; } .col-kasir { width: 15%; } .col-detail { width: 42%; } .col-total { width: 25%; text-align: right; }
         .no-border td { border: none; } /* Untuk summary table */
     </style>
 </head>
@@ -80,12 +80,12 @@
     @if($filterJenis == 'semua' || $filterJenis == 'pemasukan')
     <h2>Detail Pemasukan (Transaksi Kasir)</h2>
     <table>
-        <thead><tr><th class="col-waktu">Waktu</th><th class="col-detail">Detail Pesanan</th><th class="col-total">Total Harga</th></tr></thead>
+        <thead><tr><th class="col-waktu">Waktu</th><th class="col-kasir">Kasir</th><th class="col-detail">Detail Pesanan</th><th class="col-total">Total Harga</th></tr></thead>
         <tbody>
             @forelse ($daftarPemasukan as $pemasukan)
-                <tr><td>{{ $pemasukan->created_at->format('d/m/y H:i') }}</td><td><ul>@foreach ($pemasukan->transaksiDetails as $detail)<li>{{ $detail->jumlah }}x {{ $detail->menu->nama_menu }}</li>@endforeach</ul></td><td style="text-align: right;">Rp {{ number_format($pemasukan->total_harga, 0, ',', '.') }}</td></tr>
+                <tr><td>{{ $pemasukan->created_at->format('d/m/y H:i') }}</td><td>{{ $pemasukan->user->name }}</td><td><ul>@foreach ($pemasukan->transaksiDetails as $detail)<li>{{ $detail->jumlah }}x {{ $detail->menu->nama_menu }}</li>@endforeach</ul></td><td style="text-align: right;">Rp {{ number_format($pemasukan->total_harga, 0, ',', '.') }}</td></tr>
             @empty
-                <tr><td colspan="3" style="text-align: center;">Tidak ada pemasukan.</td></tr>
+                <tr><td colspan="4" style="text-align: center;">Tidak ada pemasukan.</td></tr>
             @endforelse
         </tbody>
     </table>

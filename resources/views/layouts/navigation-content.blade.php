@@ -14,7 +14,7 @@
         <!-- Decorative Corner Accent -->
         <div class="absolute top-0 right-0 w-24 h-24 bg-yellow-400 dark:bg-yellow-500 opacity-20 rounded-bl-full transform translate-x-8 -translate-y-8"></div>
 
-        <a href="{{ route('dashboard') }}"
+        <a href="{{ Auth::user()->isAdmin() ? route('dashboard') : route('kasir.index') }}"
            class="flex items-center gap-3 w-full h-full relative z-10 group-hover:scale-105 transition-transform duration-300"
            :class="{ 'px-6': sidebarFull, 'justify-center': !sidebarFull }">
 
@@ -43,7 +43,8 @@
             $baseClass = 'flex items-center py-3.5 px-5 text-sm font-semibold rounded-xl transition-all duration-300 ease-out relative overflow-hidden group/item';
         @endphp
 
-        <!-- Dashboard -->
+        @if(Auth::user()->isAdmin())
+        <!-- Dashboard (Admin Only) -->
         <a href="{{ route('dashboard') }}"
            class="{{ $baseClass }} {{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }}"
            :class="{ 'justify-start': sidebarFull, 'justify-center': !sidebarFull }">
@@ -51,19 +52,20 @@
             <!-- Hover Shimmer Effect -->
             <div class="absolute inset-0 -translate-x-full group-hover/item:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
-            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:rotate-12" 
-                 :class="{ 'mr-3': sidebarFull }" 
+            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:rotate-12"
+                 :class="{ 'mr-3': sidebarFull }"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h12A2.25 2.25 0 0020.25 14.25V3m-16.5 0h16.5M3.75 3H3v1.5M20.25 3H21v1.5M3.75 16.5c.621 0 1.125-.504 1.125-1.125V11.25h1.5v3.375c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V11.25h1.5v3.375c0 .621.504 1.125 1.125 1.125M6.75 12h10.5" />
             </svg>
 
             <span x-show="sidebarFull" x-cloak class="relative z-10 font-bold tracking-wide">Dashboard</span>
-            
+
             <!-- Active Indicator -->
             @if(request()->routeIs('dashboard'))
             <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-yellow-300 rounded-r-full shadow-lg"></div>
             @endif
         </a>
+        @endif
 
         <!-- Kasir -->
         <a href="{{ route('kasir.index') }}"
@@ -85,65 +87,71 @@
             @endif
         </a>
 
-        <!-- Laporan -->
+        @if(Auth::user()->isAdmin())
+        <!-- Laporan (Admin Only) -->
         <a href="{{ route('laporan.index') }}"
            class="{{ $baseClass }} {{ request()->routeIs('laporan.index') ? $activeClass : $inactiveClass }}"
            :class="{ 'justify-start': sidebarFull, 'justify-center': !sidebarFull }">
 
             <div class="absolute inset-0 -translate-x-full group-hover/item:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
-            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110" 
-                 :class="{ 'mr-3': sidebarFull }" 
+            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110"
+                 :class="{ 'mr-3': sidebarFull }"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM21 21l-5.197-5.197" />
             </svg>
 
             <span x-show="sidebarFull" x-cloak class="relative z-10 font-bold tracking-wide">Laporan</span>
-            
+
             @if(request()->routeIs('laporan.index'))
             <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-yellow-300 rounded-r-full shadow-lg"></div>
             @endif
         </a>
+        @endif
 
-        <!-- Manajemen Stok -->
+        @if(Auth::user()->isAdmin())
+        <!-- Manajemen Stok (Admin Only) -->
         <a href="{{ route('bahan-baku.index') }}"
            class="{{ $baseClass }} {{ request()->routeIs('bahan-baku.*') ? $activeClass : $inactiveClass }}"
            :class="{ 'justify-start': sidebarFull, 'justify-center': !sidebarFull }">
 
             <div class="absolute inset-0 -translate-x-full group-hover/item:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
-            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:rotate-12" 
-                 :class="{ 'mr-3': sidebarFull }" 
+            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:rotate-12"
+                 :class="{ 'mr-3': sidebarFull }"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
             </svg>
 
             <span x-show="sidebarFull" x-cloak class="relative z-10 font-bold tracking-wide">Manajemen Stok</span>
-            
+
             @if(request()->routeIs('bahan-baku.*'))
             <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-yellow-300 rounded-r-full shadow-lg"></div>
             @endif
         </a>
+        @endif
 
-        <!-- Manajemen Menu -->
+        @if(Auth::user()->isAdmin())
+        <!-- Manajemen Menu (Admin Only) -->
         <a href="{{ route('menu.index') }}"
            class="{{ $baseClass }} {{ request()->routeIs('menu.*') ? $activeClass : $inactiveClass }}"
            :class="{ 'justify-start': sidebarFull, 'justify-center': !sidebarFull }">
 
             <div class="absolute inset-0 -translate-x-full group-hover/item:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
-            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:-rotate-12" 
-                 :class="{ 'mr-3': sidebarFull }" 
+            <svg class="flex-shrink-0 h-5 w-5 transition-transform duration-300 group-hover/item:scale-110 group-hover/item:-rotate-12"
+                 :class="{ 'mr-3': sidebarFull }"
                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
 
             <span x-show="sidebarFull" x-cloak class="relative z-10 font-bold tracking-wide">Manajemen Menu</span>
-            
+
             @if(request()->routeIs('menu.*'))
             <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-yellow-300 rounded-r-full shadow-lg"></div>
             @endif
         </a>
+        @endif
     </nav>
 
     <!-- Decorative Divider -->
@@ -221,7 +229,7 @@
                             </div>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <div class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
-                                <div class="text-xs text-gray-600 dark:text-gray-300 font-semibold">Admin</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-300 font-semibold">{{ ucfirst(Auth::user()->role) }}</div>
                             </div>
                         </div>
 
