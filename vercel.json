@@ -2,13 +2,12 @@
   "version": 2,
   "routes": [
     {
-      "src": "/(build|assets|css|js|images|storage|vendor|favicon.ico)(.*)",
+      "src": "/(build|assets|css|js|images|storage|vendor|favicon.ico|robots.txt)(.*)",
       "dest": "public/$1$2"
     },
     {
       "src": "/(.*)",
       "dest": "/api/index.php"
     }
-  ],
-  "outputDirectory": "public"
+  ]
 }
