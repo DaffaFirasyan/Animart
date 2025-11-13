@@ -19,3 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+
+    if ($app->environment('production')) {
+    $app->useStoragePath(env('APP_STORAGE_PATH', '/tmp/storage'));
+    
+    $app->configureMonologUsing(function ($monolog) {
+        $monolog->pushHandler(new \Monolog\Handler\StreamHandler('php://stderr'));
+    });
+}
