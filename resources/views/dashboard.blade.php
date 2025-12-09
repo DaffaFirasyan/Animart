@@ -55,18 +55,20 @@
                         </div>
 
                         <!-- Content List with Enhanced Scrollbar -->
-                        <div class="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                             @forelse ($stokKritis as $bahan)
-                                <div class="flex justify-between items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-red-100 dark:border-red-900/30 hover:border-red-300 dark:hover:border-red-700/50 transition-all duration-300 hover:shadow-md group/item">
-                                    <div class="flex items-center space-x-2 flex-1 min-w-0">
-                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-lg shadow-red-500/50"></div>
-                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-sm truncate group-hover/item:text-red-600 dark:group-hover/item:text-red-400 transition-colors duration-200">
+                                <div class="p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-red-100 dark:border-red-900/30 hover:border-red-300 dark:hover:border-red-700/50 transition-all duration-300 hover:shadow-md group/item">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-lg shadow-red-500/50 flex-shrink-0"></div>
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-xs leading-snug group-hover/item:text-red-600 dark:group-hover/item:text-red-400 transition-colors duration-200">
                                             {{ $bahan->nama_bahan }}
                                         </span>
                                     </div>
-                                    <span class="text-red-600 dark:text-red-400 font-bold text-sm ml-2 px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                                        {{ $bahan->stok_saat_ini }} {{ $bahan->satuan }}
-                                    </span>
+                                    <div class="ml-4">
+                                        <span class="inline-block text-red-600 dark:text-red-400 font-bold text-xs px-2.5 py-1 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                                            Stok: {{ $bahan->stok_saat_ini }} {{ $bahan->satuan }}
+                                        </span>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="flex flex-col items-center justify-center py-8 space-y-3">
@@ -105,9 +107,9 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                                        Prediksi Penjualan
+                                        Prediksi
                                     </h3>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">Hari Ini</p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400 font-medium"> Penjualan Hari Ini</p>
                                 </div>
                             </div>
 
@@ -119,18 +121,20 @@
                             </div>
                         </div>
 
-                        <div class="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                             @forelse ($prediksiHariIni as $prediksi)
-                                <div class="flex justify-between items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-blue-100 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700/50 transition-all duration-300 hover:shadow-md group/item">
-                                    <div class="flex items-center space-x-2 flex-1 min-w-0">
-                                        <div class="w-2 h-2 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50"></div>
-                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-sm truncate group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors duration-200">
+                                <div class="p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-blue-100 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700/50 transition-all duration-300 hover:shadow-md group/item">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50 flex-shrink-0"></div>
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-xs leading-snug group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors duration-200">
                                             {{ $prediksi->menu->nama_menu }}
                                         </span>
                                     </div>
-                                    <span class="text-blue-600 dark:text-blue-400 font-bold text-sm ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-lg whitespace-nowrap">
-                                        ~{{ $prediksi->jumlah_prediksi }} porsi
-                                    </span>
+                                    <div class="ml-4">
+                                        <span class="inline-block text-blue-600 dark:text-blue-400 font-bold text-xs px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                            Prediksi: ~{{ $prediksi->jumlah_prediksi }} porsi
+                                        </span>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="flex flex-col items-center justify-center py-8 space-y-3">
@@ -182,18 +186,20 @@
                             </div>
                         </div>
 
-                        <div class="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                             @forelse ($rekomendasiPemesanan as $rekomendasi)
-                                <div class="flex justify-between items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-green-100 dark:border-green-900/30 hover:border-green-300 dark:hover:border-green-700/50 transition-all duration-300 hover:shadow-md group/item">
-                                    <div class="flex items-center space-x-2 flex-1 min-w-0">
-                                        <div class="w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></div>
-                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-sm truncate group-hover/item:text-green-600 dark:group-hover/item:text-green-400 transition-colors duration-200">
+                                <div class="p-3 bg-white/50 dark:bg-gray-700/30 rounded-xl border border-green-100 dark:border-green-900/30 hover:border-green-300 dark:hover:border-green-700/50 transition-all duration-300 hover:shadow-md group/item">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full shadow-lg shadow-green-500/50 flex-shrink-0"></div>
+                                        <span class="font-semibold text-gray-700 dark:text-gray-300 text-xs leading-snug group-hover/item:text-green-600 dark:group-hover/item:text-green-400 transition-colors duration-200">
                                             {{ $rekomendasi['nama_bahan'] }}
                                         </span>
                                     </div>
-                                    <span class="text-green-600 dark:text-green-400 font-bold text-sm ml-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg whitespace-nowrap">
-                                        Beli {{ $rekomendasi['rekomendasi_beli'] }} {{ $rekomendasi['satuan'] }}
-                                    </span>
+                                    <div class="ml-4">
+                                        <span class="inline-block text-green-600 dark:text-green-400 font-bold text-xs px-2.5 py-1 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                            Beli: {{ $rekomendasi['rekomendasi_beli'] }} {{ $rekomendasi['satuan'] }}
+                                        </span>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="flex flex-col items-center justify-center py-8 space-y-3">
@@ -262,7 +268,7 @@
                             <div class="relative p-6 bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
                                 <div class="text-center">
                                     <p class="text-sm font-bold text-white/80 mb-1 tracking-wide">TOTAL OMZET</p>
-                                    <p class="text-3xl lg:text-4xl font-extrabold text-white drop-shadow-lg tracking-tight">
+                                    <p class="text-3xl lg:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
                                         Rp {{ number_format($omzetWidget, 0, ',', '.') }}
                                     </p>
                                 </div>
@@ -409,7 +415,7 @@
                             display: true,
                             position: 'top',
                             labels: {
-                                color: isDarkMode ? '#e5e7eb' : '#374151',
+                                color: isDarkMode ? '#dadbddff' : '#0e0e0fff',
                                 font: {
                                     size: 14,
                                     weight: 'bold',

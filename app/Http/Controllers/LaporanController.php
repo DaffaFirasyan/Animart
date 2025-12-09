@@ -50,7 +50,7 @@ class LaporanController extends Controller
             // Ambil data paginasi hanya jika diperlukan
             if ($filterJenis == 'semua' || $filterJenis == 'pemasukan'){
                  $daftarPemasukan = $queryPemasukan->clone()->with(['user', 'transaksiDetails.menu'])
-                                    ->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+                                    ->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
             }
         }
 

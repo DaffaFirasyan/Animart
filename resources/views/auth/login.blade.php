@@ -329,15 +329,7 @@
                             </button>
                         </div>
 
-                        <div class="flex items-center justify-center pt-3">
-                            <a href="{{ route('register') }}" 
-                               class="text-xs font-bold text-red-600 hover:text-orange-600 dark:text-red-400 dark:hover:text-orange-400 transition-all duration-300 flex items-center space-x-1.5 group">
-                                <span>Belum punya akun?</span>
-                                <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
+                        <!-- Link register dihapus - hanya admin yang dapat membuat akun karyawan -->
 
                     </form>
                 </div>

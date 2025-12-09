@@ -321,7 +321,7 @@
             </div>
 
             <!-- Tables Section -->
-            <div class="grid grid-cols-1 {{ ($filterJenisAktif == 'semua') ? 'lg:grid-cols-2' : '' }} gap-6">
+            <div class="grid grid-cols-1 gap-6">
 
                 <!-- Detail Pemasukan Table -->
                 @if($filterJenisAktif == 'semua' || $filterJenisAktif == 'pemasukan')
@@ -395,9 +395,17 @@
                             </table>
                         </div>
                         
-                        @if ($daftarPemasukan instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                        <div class="mt-4">
-                            {{ $daftarPemasukan->links() }}
+                        @if ($daftarPemasukan instanceof \Illuminate\Pagination\LengthAwarePaginator && $daftarPemasukan->hasPages())
+                        <div class="mt-4 flex items-center justify-center">
+                            <div class="flex gap-1">
+                                @foreach ($daftarPemasukan->getUrlRange(1, $daftarPemasukan->lastPage()) as $page => $url)
+                                    @if ($page == $daftarPemasukan->currentPage())
+                                        <span class="px-4 py-2 bg-green-500 text-white font-bold rounded-lg">{{ $page }}</span>
+                                    @else
+                                        <a href="{{ $url }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-green-500 hover:text-white text-gray-700 dark:text-gray-300 font-semibold rounded-lg transition-colors">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                         @endif
                     </div>
