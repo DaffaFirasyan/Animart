@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BahanBakuController;
@@ -43,6 +44,32 @@ Route::middleware('auth')->group(function () {
 
     // Rute yang HANYA bisa diakses oleh ADMIN
     Route::middleware('role:admin')->group(function () {
+        
+    Route::get('/run-predictions', function () {
+        // Kunci rahasia sederhana agar orang asing tidak iseng menjalankan ini
+        // Anda bisa menggantinya atau menghapusnya jika dirasa tidak perlu
+        if (request()->query('key') !== 'rahasia-dapur-animart') {
+            abort(403, 'Unauthorized');
+        }
+
+        try {
+            // Menjalankan command
+            Artisan::call('app:generate-predictions');
+            
+            // Mengembalikan output command (jika ada text info)
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Prediksi berhasil dijalankan.',
+                'output' => Artisan::output()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    });
+        
         // Rute Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
