@@ -7,7 +7,7 @@
     "crons": [
         {
             "path": "/run-predictions?key=rahasia-dapur-animart",
-            "schedule": "0 17 * * *"
+            "schedule": "18 19 * * *"
         }
     ],
     "routes": [
