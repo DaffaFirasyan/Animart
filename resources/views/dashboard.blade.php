@@ -11,6 +11,55 @@
     <div class="py-8 sm:py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <!-- Filter Tahun Global (Year-over-Year) -->
+            <div class="mb-6 group relative overflow-hidden bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-yellow-900/20 shadow-xl rounded-2xl transition-all duration-500 border-2 border-red-200 dark:border-red-800">
+                <div class="relative p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-gradient-to-br from-red-500 to-yellow-500 rounded-xl blur-md opacity-50"></div>
+                                <div class="relative w-14 h-14 bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl">
+                                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+                                    Filter Tahun (Year-over-Year)
+                                </h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">
+                                    Bandingkan data antar tahun: {{ $selectedYear }} vs {{ $previousYear }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown Filter Tahun -->
+                        <form action="{{ route('dashboard') }}" method="GET" class="shrink-0">
+                            <input type="hidden" name="filter_omzet" value="{{ $filterOmzet }}">
+                            <input type="hidden" name="filter_grafik" value="{{ $filterGrafik }}">
+                            <div class="relative">
+                                <select name="filter_year"
+                                        class="appearance-none bg-white dark:bg-gray-800 border-2 border-red-300 dark:border-red-700 text-gray-700 dark:text-gray-300 focus:border-red-500 dark:focus:border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-xl shadow-lg text-base px-6 py-3 pr-12 font-bold cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105"
+                                        onchange="this.form.submit()">
+                                    @foreach($availableYears as $year)
+                                        <option value="{{ $year }}" @if($selectedYear == $year) selected @endif>
+                                            📆 Tahun {{ $year }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"></div>
+            </div>
+
             <!-- Premium Stats Cards Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 
@@ -219,7 +268,7 @@
                     <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-green-600 to-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                 </div>
 
-                <!-- Card 4: Omzet (Animart Theme) -->
+                <!-- Card 4: Omzet (Animart Theme) with YoY Comparison -->
                 <div class="group relative overflow-hidden bg-gradient-to-br from-white to-orange-50 dark:from-gray-800 dark:to-orange-900/20 shadow-xl hover:shadow-2xl rounded-2xl transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 border-2 border-orange-100 dark:border-orange-900/50">
                     <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 via-orange-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-bl-[3rem] transform group-hover:scale-110 transition-transform duration-500"></div>
@@ -227,6 +276,8 @@
                     <div class="relative p-6">
                         <!-- Enhanced Form -->
                         <form action="{{ route('dashboard') }}" method="GET" class="mb-4">
+                            <input type="hidden" name="filter_year" value="{{ $selectedYear }}">
+                            <input type="hidden" name="filter_grafik" value="{{ $filterGrafik }}">
                             <div class="relative">
                                 <select name="filter_omzet"
                                         class="w-full appearance-none bg-gradient-to-r from-red-50 to-yellow-50 dark:from-red-900/20 dark:to-yellow-900/20 border-2 border-red-200 dark:border-red-800 text-gray-700 dark:text-gray-700 focus:border-red-500 dark:focus:border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-xl shadow-lg text-sm px-4 py-3 pr-10 font-semibold cursor-pointer transition-all duration-300 hover:shadow-xl"
@@ -267,7 +318,7 @@
                             <!-- Value Container -->
                             <div class="relative p-6 bg-gradient-to-br from-red-500 via-orange-500 to-yellow-500 rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
                                 <div class="text-center">
-                                    <p class="text-sm font-bold text-white/80 mb-1 tracking-wide">TOTAL OMZET</p>
+                                    <p class="text-sm font-bold text-white/80 mb-1 tracking-wide">TOTAL OMZET {{ $selectedYear }}</p>
                                     <p class="text-3xl lg:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
                                         Rp {{ number_format($omzetWidget, 0, ',', '.') }}
                                     </p>
@@ -276,6 +327,42 @@
                                 <!-- Decorative Elements -->
                                 <div class="absolute top-2 right-2 w-20 h-20 bg-white/10 rounded-full blur-2xl"></div>
                                 <div class="absolute bottom-2 left-2 w-16 h-16 bg-yellow-300/20 rounded-full blur-xl"></div>
+                            </div>
+                        </div>
+
+                        <!-- YoY Comparison -->
+                        <div class="mt-4 p-4 bg-white/50 dark:bg-gray-700/30 rounded-xl border-2 border-orange-200 dark:border-orange-800">
+                            <div class="text-center">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-2">
+                                    Perbandingan dengan {{ $previousYear }}
+                                </p>
+                                <div class="flex items-center justify-center space-x-2">
+                                    @if($omzetChangePercentage > 0)
+                                        <div class="flex items-center space-x-1 text-green-600 dark:text-green-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                            </svg>
+                                            <span class="text-lg font-bold">{{ number_format($omzetChangePercentage, 2) }}%</span>
+                                        </div>
+                                    @elseif($omzetChangePercentage < 0)
+                                        <div class="flex items-center space-x-1 text-red-600 dark:text-red-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                            </svg>
+                                            <span class="text-lg font-bold">{{ number_format(abs($omzetChangePercentage), 2) }}%</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-center space-x-1 text-gray-600 dark:text-gray-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 12h14" />
+                                            </svg>
+                                            <span class="text-lg font-bold">0%</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                                    {{ $previousYear }}: Rp {{ number_format($omzetPreviousYear, 0, ',', '.') }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -320,13 +407,15 @@
 
                         <!-- Enhanced Filter Form -->
                         <form action="{{ route('dashboard') }}" method="GET" class="shrink-0">
+                            <input type="hidden" name="filter_year" value="{{ $selectedYear }}">
+                            <input type="hidden" name="filter_omzet" value="{{ $filterOmzet }}">
                             <div class="relative">
                                 <select name="filter_grafik"
                                         class="appearance-none bg-gradient-to-r from-red-50 to-yellow-50 dark:from-red-900/20 dark:to-yellow-900/20 border-2 border-red-200 dark:border-red-800 text-gray-700 dark:text-gray-700 focus:border-red-500 dark:focus:border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-xl shadow-lg text-sm px-6 py-3 pr-12 font-semibold cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105"
                                         onchange="this.form.submit()">
                                     <option value="harian" @if($filterGrafik == 'harian') selected @endif>📅 7 Hari Terakhir</option>
                                     <option value="mingguan" @if($filterGrafik == 'mingguan') selected @endif>📊 4 Minggu Terakhir</option>
-                                    <option value="bulanan" @if($filterGrafik == 'bulanan') selected @endif>📈 6 Bulan Terakhir</option>
+                                    <option value="bulanan" @if($filterGrafik == 'bulanan') selected @endif>📈 12 Bulan {{ $selectedYear }}</option>
                                 </select>
                                 <!-- Custom Arrow -->
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -356,10 +445,145 @@
                 <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"></div>
             </div>
 
+            <!-- Widget Statistik YoY Lengkap -->
+            <div class="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                
+                <!-- Total Transaksi YoY -->
+                <div class="group relative overflow-hidden bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 shadow-xl hover:shadow-2xl rounded-2xl transition-all duration-500 hover:scale-[1.02] border-2 border-blue-100 dark:border-blue-900/50">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Total Transaksi</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Tahun {{ $selectedYear }}</p>
+                                <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                    {{ number_format($yoyStats['totalTransaksiCurrent']) }} transaksi
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl">
+                                <span class="text-xs text-gray-600 dark:text-gray-400">vs {{ $previousYear }}</span>
+                                @if($yoyStats['transaksiChange'] > 0)
+                                    <div class="flex items-center space-x-1 text-green-600 dark:text-green-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                        </svg>
+                                        <span class="text-sm font-bold">{{ number_format($yoyStats['transaksiChange'], 2) }}%</span>
+                                    </div>
+                                @elseif($yoyStats['transaksiChange'] < 0)
+                                    <div class="flex items-center space-x-1 text-red-600 dark:text-red-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                        </svg>
+                                        <span class="text-sm font-bold">{{ number_format(abs($yoyStats['transaksiChange']), 2) }}%</span>
+                                    </div>
+                                @else
+                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400">0%</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                </div>
+
+                <!-- Rata-rata Transaksi per Bulan -->
+                <div class="group relative overflow-hidden bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-xl hover:shadow-2xl rounded-2xl transition-all duration-500 hover:scale-[1.02] border-2 border-purple-100 dark:border-purple-900/50">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Avg per Bulan</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Tahun {{ $selectedYear }}</p>
+                                <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                    {{ number_format($yoyStats['avgTransaksiCurrent'], 0) }} /bulan
+                                </p>
+                            </div>
+                            
+                            <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl text-center">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">{{ $previousYear }}</p>
+                                <p class="text-sm font-bold text-gray-700 dark:text-gray-300">
+                                    {{ number_format($yoyStats['avgTransaksiPrevious'], 0) }} /bulan
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                </div>
+
+                <!-- Total Omzet Tahunan YoY -->
+                <div class="group relative overflow-hidden bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 shadow-xl hover:shadow-2xl rounded-2xl transition-all duration-500 hover:scale-[1.02] border-2 border-green-100 dark:border-green-900/50">
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Omzet Tahunan</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Tahun {{ $selectedYear }}</p>
+                                <p class="text-xl font-bold text-green-600 dark:text-green-400">
+                                    Rp {{ number_format($yoyStats['omzetTahunanCurrent'], 0, ',', '.') }}
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl">
+                                <span class="text-xs text-gray-600 dark:text-gray-400">vs {{ $previousYear }}</span>
+                                @if($yoyStats['omzetChange'] > 0)
+                                    <div class="flex items-center space-x-1 text-green-600 dark:text-green-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                        </svg>
+                                        <span class="text-sm font-bold">{{ number_format($yoyStats['omzetChange'], 2) }}%</span>
+                                    </div>
+                                @elseif($yoyStats['omzetChange'] < 0)
+                                    <div class="flex items-center space-x-1 text-red-600 dark:text-red-400">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                        </svg>
+                                        <span class="text-sm font-bold">{{ number_format(abs($yoyStats['omzetChange']), 2) }}%</span>
+                                    </div>
+                                @else
+                                    <span class="text-sm font-bold text-gray-600 dark:text-gray-400">0%</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                </div>
+
+            </div>
+
         </div>
     </div>
 
-    <!-- Enhanced Chart.js with Animart Theme -->
+    <!-- Enhanced Chart.js with Animart Theme and YoY Comparison -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -368,7 +592,7 @@
             // Check if dark mode is active
             const isDarkMode = document.documentElement.classList.contains('dark');
             
-            // Animart color palette
+            // Animart color palette for current year
             const animartGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
             animartGradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)');    // Red
             animartGradient.addColorStop(0.5, 'rgba(249, 115, 22, 0.6)'); // Orange
@@ -378,30 +602,69 @@
             animartGradientArea.addColorStop(0, 'rgba(239, 68, 68, 0.3)');
             animartGradientArea.addColorStop(0.5, 'rgba(249, 115, 22, 0.2)');
             animartGradientArea.addColorStop(1, 'rgba(245, 158, 11, 0.05)');
+
+            // Previous year gradient (blue-gray)
+            const prevYearGradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            prevYearGradient.addColorStop(0, 'rgba(59, 130, 246, 0.6)');
+            prevYearGradient.addColorStop(1, 'rgba(156, 163, 175, 0.3)');
+
+            const prevYearGradientArea = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            prevYearGradientArea.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
+            prevYearGradientArea.addColorStop(1, 'rgba(156, 163, 175, 0.05)');
+
+            // Parse data
+            const chartDataPreviousYear = {!! $chartDataPreviousYear !!};
+            const selectedYear = {{ $selectedYear }};
+            const previousYear = {{ $previousYear }};
+            
+            // Create datasets array
+            const datasets = [
+                {
+                    label: 'Omzet ' + selectedYear + ' (Rp)',
+                    data: {!! $chartData !!},
+                    fill: true,
+                    backgroundColor: animartGradientArea,
+                    borderColor: animartGradient,
+                    borderWidth: 4,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ef4444',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#dc2626',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 4,
+                }
+            ];
+
+            // Add previous year data if available
+            if (chartDataPreviousYear && chartDataPreviousYear.length > 0) {
+                datasets.push({
+                    label: 'Omzet ' + previousYear + ' (Rp)',
+                    data: chartDataPreviousYear,
+                    fill: true,
+                    backgroundColor: prevYearGradientArea,
+                    borderColor: prevYearGradient,
+                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    tension: 0.4,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: '#2563eb',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 3,
+                });
+            }
             
             new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: {!! $chartLabels !!},
-                    datasets: [{
-                        label: 'Omzet (Rp)',
-                        data: {!! $chartData !!},
-                        fill: true,
-                        backgroundColor: animartGradientArea,
-                        borderColor: animartGradient,
-                        borderWidth: 4,
-                        tension: 0.4,
-                        pointBackgroundColor: '#ef4444',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#dc2626',
-                        pointHoverBorderColor: '#ffffff',
-                        pointHoverBorderWidth: 4,
-                        pointShadowBlur: 10,
-                        pointShadowColor: 'rgba(239, 68, 68, 0.5)',
-                    }]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -447,7 +710,18 @@
                             },
                             callbacks: {
                                 label: function(context) {
-                                    return ' Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                    return ' ' + context.dataset.label + ': Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                },
+                                afterBody: function(tooltipItems) {
+                                    if (tooltipItems.length === 2 && chartDataPreviousYear && chartDataPreviousYear.length > 0) {
+                                        const current = tooltipItems[0].parsed.y;
+                                        const previous = tooltipItems[1].parsed.y;
+                                        const diff = current - previous;
+                                        const percentage = previous > 0 ? ((diff / previous) * 100).toFixed(2) : 0;
+                                        const symbol = diff > 0 ? '↑' : diff < 0 ? '↓' : '=';
+                                        return '\nPerubahan: ' + symbol + ' ' + percentage + '%\n(Rp ' + Math.abs(diff).toLocaleString('id-ID') + ')';
+                                    }
+                                    return '';
                                 }
                             }
                         }
